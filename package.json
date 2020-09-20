@@ -1,0 +1,11 @@
+{
+  "name": "salud_integral_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "EsterUscanga",
+  "license": "ISC"
+}
