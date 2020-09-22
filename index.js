@@ -1,7 +1,8 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const app = express()
-
+app.use(cors())
 //const { conn } = require('./conf/conf.js')
 
 const mysql = require('mysql')
@@ -18,7 +19,7 @@ app.use(bodyParser.json())
 app.get('/usuario/:matricula', async (req, res) => {
     const matricula = req.params.matricula
     if(matricula){
-        const obtenerUsuarioArea = `select usuarios.matricula, usuarios.nombre, usuarios.apellido_paterno, usuarios.apellido_materno, usuarios.imss, areas.nombre as area 
+        const obtenerUsuarioArea = `select usuarios.matricula, usuarios.sexo, usuarios.nombre, usuarios.apellido_paterno, usuarios.apellido_materno, usuarios.imss, areas.nombre as area 
                                     from usuarios, areas 
                                     where matricula = ${conn.escape(matricula)} and usuarios.area_id = areas.id;`
         conn.query(obtenerUsuarioArea, (error, result, fileds) => {
