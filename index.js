@@ -7,8 +7,8 @@ app.use(cors())
 
 const mysql = require('mysql')
 const conn = mysql.createConnection({
-    host: '',
-    user: '',
+    host: 'localhost',
+    user: 'root',
     password: '',
     database: "db_salud_integral"
 })
@@ -61,8 +61,58 @@ app.post('/atencionNutricionalFormulario', async (req, res) => {
 })
 
 app.get('/clasificacionesEnfermedades', async (req, res) => {
-    const obtenerIdPorMatricua = `select * from calisficaciones_enfermedades;`
-    conn.query(obtenerIdPorMatricua, (error, result, fileds) => {
+    const obtenerClasificacionesEnfermedades = `select * from calisficaciones_enfermedades;`
+    conn.query(obtenerClasificacionesEnfermedades, (error, result, fileds) => {
+        if (error)
+            res.status(500).send(error)
+        else
+            res.status(200).send(result)
+    })
+})
+
+app.get('/responsablesDeLlenado', async (req, res) => {
+    const obtenerResponsablesLlenado = `select * from responsables_llenado;`
+    conn.query(obtenerResponsablesLlenado, (error, result, fileds) => {
+        if (error)
+            res.status(500).send(error)
+        else
+            res.status(200).send(result)
+    })
+})
+
+app.get('/antecendentesPatologicos', async (req, res) => {
+    const obtenerAntecendentesPatologicos = `select * from antecedentes_patologicos;`
+    conn.query(obtenerAntecendentesPatologicos, (error, result, fileds) => {
+        if (error)
+            res.status(500).send(error)
+        else
+            res.status(200).send(result)
+    })
+})
+
+app.get('/antecedentesFamiliares', async (req, res) => {
+    const obtenerAntecendentesFamiliares = `select * from antecedentes_familiares;`
+    conn.query(obtenerAntecendentesFamiliares, (error, result, fileds) => {
+        if (error)
+            res.status(500).send(error)
+        else
+            res.status(200).send(result)
+    })
+})
+
+app.get('/gruposSanguineos', async (req, res) => {
+    const obtenerGruposSanguineos = `select * from grupos_sanguineos;`
+    conn.query(obtenerGruposSanguineos, (error, result, fileds) => {
+        if (error)
+            res.status(500).send(error)
+        else
+            res.status(200).send(result)
+    })
+})
+
+app.get('/metodosAnticonceptivos', async (req, res) => {
+    const obtenerMetodosAnticonceptivos = `select * from metodos_anticonceptivos;`
+    conn.query(obtenerMetodosAnticonceptivos, (error, result, fileds) => {
         if (error)
             res.status(500).send(error)
         else
