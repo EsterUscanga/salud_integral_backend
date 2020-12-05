@@ -7,8 +7,8 @@ app.use(cors())
 
 const mysql = require('mysql')
 const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
+    host: '',
+    user: '',
     password: '',
     database: "db_salud_integral"
 })
