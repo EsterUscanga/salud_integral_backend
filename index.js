@@ -16,7 +16,7 @@ const conn = mysql.createConnection({
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.get('/usuario/:matricula', async (req, res) => {
+app.get('/usuario/:matricula', (req, res) => {
     const matricula = req.params.matricula
     if (matricula) {
         const obtenerUsuarioArea = `select usuarios.matricula, usuarios.sexo, usuarios.nombre, usuarios.apellido_paterno, usuarios.apellido_materno, usuarios.imss, areas.nombre as area 
@@ -34,7 +34,7 @@ app.get('/usuario/:matricula', async (req, res) => {
     }
 })
 
-app.post('/atencionNutricionalFormulario', async (req, res) => {
+app.post('/atencionNutricionalFormulario', (req, res) => {
     const matricula = req.body.matricula,
           talla = req.body.talla,
           peso = req.body.peso,
@@ -56,11 +56,11 @@ app.post('/atencionNutricionalFormulario', async (req, res) => {
             }
         })
     } else {
-        res.status(401).send({ error: "Se necesita talla, peso e imc del usuario" })
+        res.status(401).send("Se necesita talla, peso e imc del usuario")
     }
 })
 
-app.get('/clasificacionesEnfermedades', async (req, res) => {
+app.get('/clasificacionesEnfermedades', (req, res) => {
     const obtenerClasificacionesEnfermedades = `select * from calisficaciones_enfermedades;`
     conn.query(obtenerClasificacionesEnfermedades, (error, result, fileds) => {
         if (error)
@@ -70,7 +70,7 @@ app.get('/clasificacionesEnfermedades', async (req, res) => {
     })
 })
 
-app.get('/responsablesDeLlenado', async (req, res) => {
+app.get('/responsablesDeLlenado', (req, res) => {
     const obtenerResponsablesLlenado = `select * from responsables_llenado;`
     conn.query(obtenerResponsablesLlenado, (error, result, fileds) => {
         if (error)
@@ -80,7 +80,7 @@ app.get('/responsablesDeLlenado', async (req, res) => {
     })
 })
 
-app.get('/antecendentesPatologicos', async (req, res) => {
+app.get('/antecendentesPatologicos', (req, res) => {
     const obtenerAntecendentesPatologicos = `select * from antecedentes_patologicos;`
     conn.query(obtenerAntecendentesPatologicos, (error, result, fileds) => {
         if (error)
@@ -90,7 +90,7 @@ app.get('/antecendentesPatologicos', async (req, res) => {
     })
 })
 
-app.get('/antecedentesFamiliares', async (req, res) => {
+app.get('/antecedentesFamiliares', (req, res) => {
     const obtenerAntecendentesFamiliares = `select * from antecedentes_familiares;`
     conn.query(obtenerAntecendentesFamiliares, (error, result, fileds) => {
         if (error)
@@ -100,7 +100,7 @@ app.get('/antecedentesFamiliares', async (req, res) => {
     })
 })
 
-app.get('/gruposSanguineos', async (req, res) => {
+app.get('/gruposSanguineos', (req, res) => {
     const obtenerGruposSanguineos = `select * from grupos_sanguineos;`
     conn.query(obtenerGruposSanguineos, (error, result, fileds) => {
         if (error)
@@ -110,7 +110,7 @@ app.get('/gruposSanguineos', async (req, res) => {
     })
 })
 
-app.get('/metodosAnticonceptivos', async (req, res) => {
+app.get('/metodosAnticonceptivos', (req, res) => {
     const obtenerMetodosAnticonceptivos = `select * from metodos_anticonceptivos;`
     conn.query(obtenerMetodosAnticonceptivos, (error, result, fileds) => {
         if (error)
@@ -120,7 +120,60 @@ app.get('/metodosAnticonceptivos', async (req, res) => {
     })
 })
 
-app.post('/justificacionFaltasFormulario', async (req, res) => {
+app.post('/saludPreventivaFormulario', (req, res) => {
+    const matricula = req.body.matricula,
+          responsableDeLlenado = req.body.responsableDeLlenado,
+          edad = req.body.edad,
+          peso = req.body.peso,
+          talla = req.body.talla,
+          grupoSanguineo = req.body.grupoSanguineo,
+          fuma = req.body.fuma ? 1 : 0,
+          ingiereBebidasAlcoholicas = req.body.ingiereBebidasAlcoholicas ? 1 : 0,
+          ingieraOtraSustancia = req.body.ingieraOtraSustancia,
+          usaLentes = req.body.usaLentes ? 1 : 0,
+          numeroEmbarazos = req.body.numeroEmbarazos,
+          actividadFisica = req.body.actividadFisica ? 1 : 0,
+          antecedentesPatologicos = req.body.antecedentesPatologicos,
+          antecedentesFamiliares = req.body.antecedentesFamiliares,
+          metodosAnticonceptivos = req.body.metodosAnticonceptivos
+    
+    if(matricula) {
+
+        const obtenerIdPorMatricua = `select id from usuarios where matricula = ${conn.escape(matricula)};`
+        conn.query(obtenerIdPorMatricua, (error, result, fileds) => {
+            if (error)
+                res.status(500).send(error)
+            else {
+                console.log(result[0])
+                const insertarSaludPreventivaFormulario = 
+                    `INSERT INTO formularios_salud_preventiva 
+                    (usuario_id, responsable_llenado_id, edad, peso, talla, grupo_sanguineo_id, fuma, bebidas_alcoholicas, 
+                    otra_sustancia, uso_lentes, numero_embarazos, actividad_fisica, antecedentes_patologicos, antecedentes_familiares, 
+                    metodos_anticonceptivos) VALUES 
+                    (${conn.escape(result[0].id)}, ${conn.escape(responsableDeLlenado)} , ${conn.escape(edad)}, 
+                    ${conn.escape(peso)}, ${conn.escape(talla)}, ${conn.escape(grupoSanguineo)}, ${conn.escape(fuma)}, 
+                    ${conn.escape(ingiereBebidasAlcoholicas)}, ${conn.escape(ingieraOtraSustancia)}, ${conn.escape(usaLentes)}, 
+                    ${conn.escape(numeroEmbarazos)}, ${conn.escape(actividadFisica)}, ${conn.escape(antecedentesPatologicos)},
+                    ${conn.escape(antecedentesFamiliares)}, ${conn.escape(metodosAnticonceptivos)});`
+                conn.query(insertarSaludPreventivaFormulario, (error, result, fileds) => {
+                    if (error) {
+                        console.log(error)
+                        res.status(500).send(error)
+                    } else {
+                        res.status(200).send({status : "Formulario enviado exitosamente."})        
+
+                    } 
+                })
+            }
+        })    
+    } else {
+        res.status(401).send("Porfavor llenar todos los campos")
+    }     
+    
+
+})
+
+app.post('/justificacionFaltasFormulario', (req, res) => {
     const matricula = req.body.matricula,
           cuatrimestre = req.body.cuatrimestre,
           fechaIncio = "2020-12-09 13:31:33",
@@ -146,7 +199,7 @@ app.post('/justificacionFaltasFormulario', async (req, res) => {
             }
         })
     } else {
-        res.status(401).send({ error: "Se necesita talla, peso e imc del usuario" })
+        res.status(401).send("Se necesita talla, peso e imc del usuario")
     }
 
           
