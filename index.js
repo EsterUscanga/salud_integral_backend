@@ -1,7 +1,9 @@
 const express = require('express'),
       bodyParser = require('body-parser'),
       cors = require('cors'),
+      fs = require('fs'),
       app = express()
+      
 
 app.use(cors())
 
@@ -10,7 +12,7 @@ const conn = mysql.createConnection({
     host: '',
     user: '',
     password: '',
-    database: "db_salud_integral"
+    database: ''
 })
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -176,18 +178,19 @@ app.post('/saludPreventivaFormulario', (req, res) => {
 app.post('/justificacionFaltasFormulario', (req, res) => {
     const matricula = req.body.matricula,
           cuatrimestre = req.body.cuatrimestre,
-          fechaIncio = "2020-12-09 13:31:33",
-          fechaFin = "2020-12-11 13:31:33",
+          fechaInicio = req.body.fechaInicio,
+          fechaFin = req.body.fechaFin,
           clasificacionEnfermedad = req.body.clasificacionEnfermedad,
-          descripcionEnfermedad = req.body.descripcionEnfermedad
+          descripcionEnfermedad = req.body.descripcionEnfermedad,
+          comprobante = req.body.comprobante
 
-    if (matricula && cuatrimestre && fechaIncio && fechaFin && clasificacionEnfermedad && descripcionEnfermedad) {
+    if (matricula) {
         const obtenerIdPorMatricua = `select id from usuarios where matricula = ${conn.escape(matricula)};`
         conn.query(obtenerIdPorMatricua, (error, result, fileds) => {
             if (error)
                 res.status(500).send(error)
             else {
-                const insertarFormularioJustificaciones = `INSERT INTO formularios_justificaciones (usuario_id, cuatrimestre, fecha_inicio, fecha_fin, clasificacion_enfermedad_id, descripcion_enfermedad) VALUES (${conn.escape(result[0].id)}, ${conn.escape(cuatrimestre)}, CURRENT_DATE, CURRENT_DATE, ${conn.escape(clasificacionEnfermedad)}, ${conn.escape(descripcionEnfermedad)});`
+               const insertarFormularioJustificaciones = `INSERT INTO formularios_justificaciones (usuario_id, cuatrimestre, fecha_inicio, fecha_fin, clasificacion_enfermedad_id, descripcion_enfermedad, comprobante) VALUES (${conn.escape(result[0].id)}, ${conn.escape(cuatrimestre)}, ${conn.escape(fechaInicio)}, ${conn.escape(fechaFin)}, ${conn.escape(clasificacionEnfermedad)}, ${conn.escape(descripcionEnfermedad)}, ${conn.escape(comprobante)});`
                 conn.query(insertarFormularioJustificaciones, (error, result, fileds) => {
                     if (error) {
                         console.log(error)
